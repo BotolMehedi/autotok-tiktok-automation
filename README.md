@@ -2,9 +2,9 @@
 </h1>
 
 <div align="center">
-
-[![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/) [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/) [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE) [![TikTok API](https://img.shields.io/badge/TikTok-API-EE1D52?style=for-the-badge&logo=tiktok&logoColor=white)](https://developers.tiktok.com/)
-
+   
+[![PHP Version](https://img.shields.io/badge/8.0%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/) [![MySQL](https://img.shields.io/badge/5.7%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/) [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE) [![TikTok API](https://img.shields.io/badge/TikTok-API-EE1D52?style=for-the-badge&logo=tiktok&logoColor=white)](https://developers.tiktok.com/)
+   
 *AUTOTOK is a full-stack web application that automates TikTok video uploads and scheduling through the official TikTok API. Built with PHP, MySQL. Ultimate tool for content creators to schedule multiple daily posts, manage bulk uploads*
 
 
@@ -259,5 +259,6 @@ A massive shoutout to <b>Claude Sonnet</b> for being the ultimate coding buddy w
 [Portfolio](https://mehedi.fun) | [Email](mailto:hello@mehedi.fun) | [Github](https://github.com/BotolMehedi)
 
 **Made with ❤️ and lots of 💦 by [BotolMehedi](https://github.com/BotolMehedi)**
+
 
 </div>
