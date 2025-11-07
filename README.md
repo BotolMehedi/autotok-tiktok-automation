@@ -49,12 +49,6 @@ I’m not going to tell you how to install it. If you can’t figure it out your
 
 ## Configure Environment
 
-Copy the example environment file:
-
-```
-cp .env.example .env
-```
-
 Edit `.env` with your configuration:
 
 ```
@@ -269,5 +263,6 @@ A massive shoutout to <b>Claude Sonnet</b> for being the ultimate coding buddy w
 [Portfolio](https://mehedi.fun) | [Email](mailto:hello@mehedi.fun) | [Github](https://github.com/BotolMehedi)
 
 **Made with ❤️ and lots of 💦 by [BotolMehedi](https://github.com/BotolMehedi)**
+
 
 </div>
