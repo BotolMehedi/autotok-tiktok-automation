@@ -1,0 +1,33 @@
+Options -Indexes
+ServerSignature Off
+
+<FilesMatch "\.(env|sql|log|json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+
+php_value upload_max_filesize 500M
+php_value post_max_size 520M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 512M
+
+
+php_flag display_errors Off
+php_flag log_errors On
+php_value error_log logs/php_errors.log
+
+
+<FilesMatch "^config\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+
+RewriteEngine On
+RewriteBase /autoposting/
+
+
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
