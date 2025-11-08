@@ -300,6 +300,13 @@ $logs = $stmt->fetchAll();
                                                 <button onclick="reauthorizeProfile(<?php echo $schedule['id']; ?>)" class="bg-yellow-600 hover:bg-yellow-700 text-white px-2 md:px-3 py-1 rounded text-xs whitespace-nowrap" title="Reauthorize">
                                                     Reauth
                                                 </button>
+                                                <button 
+  onclick="openEditModal(<?php echo htmlspecialchars(json_encode($schedule)); ?>)" 
+  class="bg-purple-600 hover:bg-purple-700 text-white px-2 md:px-3 py-1 rounded text-xs" 
+  title="Edit Schedule">
+  Edit
+</button>
+
                                                 <button onclick="uploadNow(<?php echo $schedule['id']; ?>)" class="bg-blue-600 hover:bg-blue-700 text-white px-2 md:px-3 py-1 rounded text-xs" title="Upload Now">
                                                     ▶
                                                 </button>
@@ -363,6 +370,74 @@ $logs = $stmt->fetchAll();
             </div>
         </div>
     </div>
+    
+    
+<!-- Edit Schedule Modal -->
+<div id="editScheduleModal" class="modal">
+  <div class="bg-gray-900 rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-700">
+    <div class="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
+      <h3 class="text-xl font-bold text-white">Edit Schedule</h3>
+      <button onclick="closeModal('editScheduleModal')" class="text-gray-400 hover:text-white">
+        ✕
+      </button>
+    </div>
+
+    <form id="editScheduleForm" class="p-4 space-y-4" enctype="multipart/form-data">
+      <input type="hidden" name="id" id="edit_schedule_id">
+
+      <!-- Username -->
+      <div>
+        <label class="block text-white font-semibold mb-2">TikTok Username</label>
+        <input type="text" id="edit_username" name="username" required
+          class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3">
+      </div>
+
+      <!-- Captions -->
+      <div>
+        <label class="block text-white font-semibold mb-2">Captions (JSON Format)</label>
+        <textarea id="edit_captions" name="captions" rows="6" required
+          class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3"></textarea>
+      </div>
+
+      <!-- Times -->
+      <div>
+        <label class="block text-white font-semibold mb-2">Schedule Times (Up to 3)</label>
+        <div class="space-y-2">
+          <input type="time" id="edit_time1" name="time1"
+            class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3">
+          <input type="time" id="edit_time2" name="time2"
+            class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3">
+          <input type="time" id="edit_time3" name="time3"
+            class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3">
+        </div>
+      </div>
+
+      <!-- Video Section -->
+      <div>
+        <label class="block text-white font-semibold mb-2">Existing Videos</label>
+        <div id="editVideoPreview" class="grid grid-cols-2 gap-3"></div>
+      </div>
+
+      <div>
+        <label class="block text-white font-semibold mb-2">Upload New Videos (.mp4)</label>
+        <input type="file" id="edit_videos" name="videos[]" accept="video/mp4" multiple
+          class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3">
+      </div>
+
+      <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
+        <button type="submit"
+          class="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition">
+          Save Changes
+        </button>
+        <button type="button" onclick="closeModal('editScheduleModal')"
+          class="flex-1 bg-gray-700 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
     <!-- Add Schedule Modal -->
     <div id="addScheduleModal" class="modal">
@@ -636,6 +711,106 @@ function animateHamburger(open) {
                 closeMobileMenu();
             }
         });
+        
+        
+        
+        let removedVideos = [];
+
+async function openEditModal(schedule) {
+  removedVideos = [];
+
+  document.getElementById('edit_schedule_id').value = schedule.id;
+  document.getElementById('edit_username').value = schedule.username;
+  document.getElementById('edit_captions').value = '';
+
+  const times = JSON.parse(schedule.schedule_times || '[]');
+  document.getElementById('edit_time1').value = times[0] || '';
+  document.getElementById('edit_time2').value = times[1] || '';
+  document.getElementById('edit_time3').value = times[2] || '';
+
+  const container = document.getElementById('editVideoPreview');
+  container.innerHTML = '<p class="text-gray-400 text-sm">Loading...</p>';
+
+  try {
+    const res = await fetch(`ajax/get_schedule.php?username=${encodeURIComponent(schedule.username)}`);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message || 'Failed to load assets');
+
+    // 🧾 Fill captions JSON
+    document.getElementById('edit_captions').value = data.captions || '';
+
+    // 🎬 Load videos
+    container.innerHTML = '';
+    if (data.videos && data.videos.length > 0) {
+      data.videos.forEach(fileName => {
+        const videoUrl = `videos/${schedule.username}_videos/${fileName}`;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative border border-gray-700 rounded-lg overflow-hidden';
+        wrapper.innerHTML = `
+          <video src="${videoUrl}" controls class="w-full h-32 object-cover"></video>
+          <button type="button" onclick="removeVideo('${fileName}', this)" 
+            class="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 text-xs hover:bg-red-700">✕</button>
+        `;
+        container.appendChild(wrapper);
+      });
+    } else {
+      container.innerHTML = '<p class="text-gray-400 text-sm">No existing videos found.</p>';
+    }
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p class="text-red-500 text-sm">Failed to load videos.</p>';
+  }
+
+  openModal('editScheduleModal');
+}
+
+
+function removeVideo(filename, btn) {
+  removedVideos.push(filename);
+  btn.closest('div').remove();
+}
+
+document.getElementById('editScheduleForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('edit_schedule_id').value;
+  const username = document.getElementById('edit_username').value.trim();
+  const captions = document.getElementById('edit_captions').value.trim();
+  const times = [document.getElementById('edit_time1').value, document.getElementById('edit_time2').value, document.getElementById('edit_time3').value].filter(Boolean);
+
+  if (!username || !captions || times.length === 0) {
+    showToast('All fields are required', 'error');
+    return;
+  }
+
+  try { JSON.parse(captions); } 
+  catch { showToast('Invalid JSON format for captions', 'error'); return; }
+
+  const formData = new FormData();
+  formData.append('id', id);
+  formData.append('username', username);
+  formData.append('captions', captions);
+  formData.append('times', JSON.stringify(times));
+  formData.append('removed_videos', JSON.stringify(removedVideos));
+
+  const files = document.getElementById('edit_videos').files;
+  for (let file of files) {
+    formData.append('videos[]', file);
+  }
+
+  const response = await fetch('ajax/edit_schedule.php', { method: 'POST', body: formData });
+  const data = await response.json();
+
+  if (data.success) {
+    showToast('Schedule updated successfully', 'success');
+    closeModal('editScheduleModal');
+    setTimeout(() => location.reload(), 1500);
+  } else {
+    showToast(data.message || 'Update failed', 'error');
+  }
+});
+
     </script>
 </body>
 </html>
